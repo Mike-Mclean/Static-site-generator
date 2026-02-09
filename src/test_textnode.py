@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType
+from textnode import *
 
 class TestTextNode(unittest.TestCase):
 
@@ -23,6 +23,12 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This node has a link", TextType.LINKS, "https://www.boot.dev")
         not_expected_repr = "TextNode(This node has a link, link)"
         self.assertNotEqual(repr(node), not_expected_repr)
+
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
 
 
 if __name__ == "__main__":
