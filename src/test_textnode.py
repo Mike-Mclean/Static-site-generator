@@ -1,5 +1,5 @@
 import unittest
-from split_nodes import split_nodes_delimiter
+from split_nodes import *
 from textnode import *
 from extract_from_mds import *
 
@@ -119,6 +119,42 @@ class TestTextNode(unittest.TestCase):
             )
         expected_result = []
         self.assertEqual(matches, expected_result)
+
+    def test_split_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGES, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and another ", TextType.TEXT),
+                TextNode(
+                    "second image", TextType.IMAGES, "https://i.imgur.com/3elNhQu.png"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_links(self):
+        node = TextNode(
+        "This is text with a link [to google](https://www.google.com) and [to youtube](https://www.youtube.com)",
+        TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to google", TextType.LINKS, "https://www.google.com"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode(
+                    "to youtube", TextType.LINKS, "https://www.youtube.com"
+                ),
+            ],
+            new_nodes
+        )
 
 if __name__ == "__main__":
     unittest.main()
