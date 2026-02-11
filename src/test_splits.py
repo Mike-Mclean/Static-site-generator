@@ -134,5 +134,43 @@ This is the same paragraph on a new line
         blocks = markdown_to_blocks(md)
         self.assertEqual(blocks, [''])
 
+    def test_block_type_heading(self):
+        md = "### This is a heading"
+        type = block_to_block_type(md)
+        self.assertEqual(type, BlockType.HEADING)
+
+    def test_block_type_code(self):
+        md = '```this = "code block" ```'
+        type = block_to_block_type(md)
+        self.assertEqual(type, BlockType.CODE)
+
+    def test_block_type_quote(self):
+        md = "> This is a quote"
+        type = block_to_block_type(md)
+        self.assertEqual(type, BlockType.QUOTE)
+
+    def test_block_type_unordered_list(self):
+        md = """- This is an unordered list
+- This is an unordered list
+
+"""
+        type = block_to_block_type(md)
+        self.assertEqual(type, BlockType.UNORDERED_LIST)
+
+    def test_block_type_ordered_list(self):
+        md = """
+1. This is an ordered list
+2. This is an ordered list
+3. This is an ordered list
+
+"""
+        type = block_to_block_type(md)
+        self.assertEqual(type, BlockType.ORDERED_LIST)
+
+    def test_block_type_paragraph(self):
+        md = "This is a paragraph"
+        type = block_to_block_type(md)
+        self.assertEqual(type, BlockType.PARAGRAPH)
+
 if __name__ == "__main__":
     unittest.main()
