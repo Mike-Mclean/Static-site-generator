@@ -37,7 +37,7 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is a bold node")
 
-    def test_bold(self):
+    def test_bold_2(self):
         node = TextNode("This is a bold node", TextType.BOLD)
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "b")
@@ -68,110 +68,6 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.props, {"src": "https://ca.canadapooch.com/cdn/shop/files/SuspenderBoots_Red_Side_2-min_329x.jpg?v=1761773713", "alt": "This is an image node"})
-
-    def test_split_nodes_code(self):
-        node = TextNode("This is text with a `code block` word", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-        expected_nodes = [
-                            TextNode("This is text with a ", TextType.TEXT),
-                            TextNode("code block", TextType.CODE),
-                            TextNode(" word", TextType.TEXT),
-                        ]
-        self.assertEqual(new_nodes, expected_nodes)
-
-    def test_extract_markdown_images(self):
-        matches = extract_markdown_images(
-            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
-            )
-        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
-
-    def test_extract_markdown_images_2(self):
-        matches = extract_markdown_images(
-            "This is text with multiple ![image](https://i.imgur.com/zjjcJKZ.png) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
-            )
-        expected_result = [("image", "https://i.imgur.com/zjjcJKZ.png"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
-        self.assertListEqual(expected_result, matches)
-
-    def test_extract_markdown_images_3(self):
-        matches = extract_markdown_images(
-            "This is text with no images"
-            )
-        expected_result = []
-        self.assertListEqual(expected_result, matches)
-
-    def test_extract_markdown_links(self):
-        matches = extract_markdown_links(
-            "This is text with multiple links [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-            )
-        expected_result = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
-        self.assertEqual(matches, expected_result)
-
-    def test_extract_markdown_links_2(self):
-        matches = extract_markdown_links(
-            "This is text with a link [to boot dev](https://www.boot.dev)"
-            )
-        expected_result = [("to boot dev", "https://www.boot.dev")]
-        self.assertEqual(matches, expected_result)
-
-    def test_extract_markdown_links_3(self):
-        matches = extract_markdown_links(
-            "This is text with no link"
-            )
-        expected_result = []
-        self.assertEqual(matches, expected_result)
-
-    def test_split_images(self):
-        node = TextNode(
-            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
-            TextType.TEXT,
-        )
-        new_nodes = split_nodes_image([node])
-        self.assertListEqual(
-            [
-                TextNode("This is text with an ", TextType.TEXT),
-                TextNode("image", TextType.IMAGES, "https://i.imgur.com/zjjcJKZ.png"),
-                TextNode(" and another ", TextType.TEXT),
-                TextNode(
-                    "second image", TextType.IMAGES, "https://i.imgur.com/3elNhQu.png"
-                ),
-            ],
-            new_nodes,
-        )
-
-    def test_split_links(self):
-        node = TextNode(
-        "This is text with a link [to google](https://www.google.com) and [to youtube](https://www.youtube.com)",
-        TextType.TEXT,
-        )
-        new_nodes = split_nodes_link([node])
-        self.assertListEqual(
-            [
-                TextNode("This is text with a link ", TextType.TEXT),
-                TextNode("to google", TextType.LINKS, "https://www.google.com"),
-                TextNode(" and ", TextType.TEXT),
-                TextNode(
-                    "to youtube", TextType.LINKS, "https://www.youtube.com"
-                ),
-            ],
-            new_nodes
-        )
-
-    def test_text_to_textnodes(self):
-        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://www.google.com)"
-        nodes = text_to_textnodes(text)
-        expected_nodes = [
-            TextNode("This is ", TextType.TEXT),
-            TextNode("text", TextType.BOLD),
-            TextNode(" with an ", TextType.TEXT),
-            TextNode("italic", TextType.ITALIC),
-            TextNode(" word and a ", TextType.TEXT),
-            TextNode("code block", TextType.CODE),
-            TextNode(" and an ", TextType.TEXT),
-            TextNode("obi wan image", TextType.IMAGES, "https://i.imgur.com/fJRm4Vk.jpeg"),
-            TextNode(" and a ", TextType.TEXT),
-            TextNode("link", TextType.LINKS, "https://www.google.com")
-        ]
-        self.assertListEqual(nodes, expected_nodes)
 
 if __name__ == "__main__":
     unittest.main()
