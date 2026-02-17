@@ -2,6 +2,7 @@ from enum import Enum
 import re
 from htmlnode import *
 from split_nodes import *
+from textnode import *
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -29,7 +30,6 @@ def is_ordered_list(markdown):
     return True
 
 def block_to_block_type(markdown):
-
     match = re.findall(r"^[#]{1,6}\s+", markdown)
     if match:
         return BlockType.HEADING
@@ -59,14 +59,28 @@ def get_tag(block_type):
         case BlockType.ORDERED_LIST:
             return ["li", "ol"]
 
-def split_list(md_list):
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    children = []
+    for node in text_nodes:
+        children.append(text_node_to_html_node(node))
+    return children
+
+def manage_split_lines(text):
     pass
 
 def markdown_to_HTML_node(markdown):
+    block_nodes = []
     blocks = markdown_to_blocks(markdown)
     for block in blocks:
-        split_block = text_to_textnodes(block)
-    return split_block
+        block_type = block_to_block_type(block)
+        block_tag = get_tag(block_type)
+        children = text_to_children(block)
+        block_node = ParentNode(tag=block_tag, children=children)
+        block_nodes.append(block_node)
+
+    html_node = ParentNode(tag='div', children=block_nodes)
+    return html_node
 
 if __name__ == "__main__":
     md = """
@@ -77,6 +91,6 @@ tag here
 This is another paragraph with _italic_ text and `code` here
 
 """
-    nodes = markdown_to_HTML_node(md)
-    for node in nodes:
-        print(node)
+    node = markdown_to_HTML_node(md)
+    print(node.to_html())
+
