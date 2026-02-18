@@ -1,5 +1,4 @@
 from enum import Enum
-import re
 from htmlnode import *
 from split_nodes import *
 from textnode import *
@@ -30,8 +29,7 @@ def is_ordered_list(markdown):
     return True
 
 def block_to_block_type(markdown):
-    match = re.findall(r"^[#]{1,6}\s+", markdown)
-    if match:
+    if markdown[0] == "#":
         return BlockType.HEADING
     if markdown[0:3] == "```":
         return BlockType.CODE
@@ -51,7 +49,7 @@ def get_tag(block_type):
         case BlockType.HEADING:
             return "h"
         case BlockType.CODE:
-            return ["pre", "code"]
+            return "pre"
         case BlockType.QUOTE:
             return "blockquote"
         case BlockType.UNORDERED_LIST:
@@ -67,7 +65,17 @@ def text_to_children(text):
     return children
 
 def manage_split_lines(text):
-    pass
+    return " ".join(text.strip().split("\n"))
+
+def get_heading_level(text):
+    current_char = text[0]
+    heading_count = 0
+    while current_char == '#':
+        heading_count += 1
+        current_char = text[heading_count]
+    if heading_count >= 6:
+        raise Exception("Invalid heading depth")
+    return heading_count
 
 def markdown_to_HTML_node(markdown):
     block_nodes = []
@@ -75,8 +83,17 @@ def markdown_to_HTML_node(markdown):
     for block in blocks:
         block_type = block_to_block_type(block)
         block_tag = get_tag(block_type)
-        children = text_to_children(block)
-        block_node = ParentNode(tag=block_tag, children=children)
+        if block_type == BlockType.CODE:
+            code_text_node = TextNode(text=block.strip("`"), text_type=TextType.CODE)
+            child = text_node_to_html_node(code_text_node)
+            block_node = ParentNode(tag=block_tag, children=[child])
+        else:
+            if block_type == BlockType.HEADING:
+                block_tag += str(get_heading_level(block))
+                block = block.strip("#")
+            inline_block = manage_split_lines(block)
+            children = text_to_children(inline_block)
+            block_node = ParentNode(tag=block_tag, children=children)
         block_nodes.append(block_node)
 
     html_node = ParentNode(tag='div', children=block_nodes)
@@ -84,13 +101,14 @@ def markdown_to_HTML_node(markdown):
 
 if __name__ == "__main__":
     md = """
-This is **bolded** paragraph
-text in a p
+- This is a quote
+
+##This is a heading
+
+This is paragraph text in a p
 tag here
-
-This is another paragraph with _italic_ text and `code` here
-
 """
+    print(markdown_to_blocks(md))
     node = markdown_to_HTML_node(md)
     print(node.to_html())
 
