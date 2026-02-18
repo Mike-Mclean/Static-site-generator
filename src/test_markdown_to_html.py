@@ -46,7 +46,7 @@ tag here
 
     def test_quote(self):
         md = """
-- This is a quote
+> This is a quote
 
 ##This is a heading
 
@@ -57,7 +57,7 @@ tag here
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><blockquote>This is a quote</blockquote><h2>This is a heading</h2><p>This is a paragraph text in a p tag here</p></div>"
+            "<div><blockquote>This is a quote</blockquote><h2>This is a heading</h2><p>This is paragraph text in a p tag here</p></div>"
         )
 
 if __name__ == "__main__":

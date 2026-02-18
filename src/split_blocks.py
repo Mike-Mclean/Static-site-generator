@@ -91,6 +91,8 @@ def markdown_to_HTML_node(markdown):
             if block_type == BlockType.HEADING:
                 block_tag += str(get_heading_level(block))
                 block = block.strip("#")
+            if block_type == BlockType.QUOTE:
+                block = block.strip(">")
             inline_block = manage_split_lines(block)
             children = text_to_children(inline_block)
             block_node = ParentNode(tag=block_tag, children=children)
@@ -101,7 +103,7 @@ def markdown_to_HTML_node(markdown):
 
 if __name__ == "__main__":
     md = """
-- This is a quote
+> This is a quote
 
 ##This is a heading
 
