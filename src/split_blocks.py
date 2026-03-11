@@ -53,15 +53,28 @@ def get_tag(block_type):
         case BlockType.QUOTE:
             return "blockquote"
         case BlockType.UNORDERED_LIST:
-            return ["li", "ul"]
+            return "ul"
         case BlockType.ORDERED_LIST:
-            return ["li", "ol"]
+            return "ol"
 
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)
     children = []
     for node in text_nodes:
         children.append(text_node_to_html_node(node))
+    return children
+
+def list_children(text, is_ul = False):
+    children = []
+    list_items = text.strip().split("\n")
+    if not is_ul:
+        ol_item = 1
+    for item in list_items:
+        if is_ul:
+            children.append(LeafNode("li", item.strip('- ')))
+        else:
+            children.append(LeafNode("li", item.strip(f"{ol_item}. ")))
+            ol_item += 1
     return children
 
 def manage_split_lines(text):
@@ -83,19 +96,36 @@ def markdown_to_HTML_node(markdown):
     for block in blocks:
         block_type = block_to_block_type(block)
         block_tag = get_tag(block_type)
+
         if block_type == BlockType.CODE:
             code_text_node = TextNode(text=block.strip("`"), text_type=TextType.CODE)
             child = text_node_to_html_node(code_text_node)
             block_node = ParentNode(tag=block_tag, children=[child])
+
         else:
+            if block_type == BlockType.PARAGRAPH:
+                inline_block = manage_split_lines(block)
+                children = text_to_children(inline_block)
+
             if block_type == BlockType.HEADING:
                 block_tag += str(get_heading_level(block))
                 block = block.strip("#")
+                inline_block = manage_split_lines(block)
+                children = text_to_children(inline_block)
+
             if block_type == BlockType.QUOTE:
                 block = block.strip(">")
-            inline_block = manage_split_lines(block)
-            children = text_to_children(inline_block)
+                inline_block = manage_split_lines(block)
+                children = text_to_children(inline_block)
+
+            if block_type == BlockType.UNORDERED_LIST:
+                children = list_children(block, is_ul=True)
+
+            if block_type == BlockType.ORDERED_LIST:
+                children = list_children(block)
+
             block_node = ParentNode(tag=block_tag, children=children)
+
         block_nodes.append(block_node)
 
     html_node = ParentNode(tag='div', children=block_nodes)
@@ -103,14 +133,13 @@ def markdown_to_HTML_node(markdown):
 
 if __name__ == "__main__":
     md = """
-> This is a quote
+1. This is an ordered list
+2. With multiple
+3. items that I'm
+4. using for testing
 
 ##This is a heading
-
-This is paragraph text in a p
-tag here
 """
-    print(markdown_to_blocks(md))
     node = markdown_to_HTML_node(md)
     print(node.to_html())
 
