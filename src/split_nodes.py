@@ -71,12 +71,3 @@ def text_to_textnodes(text):
     new_nodes = split_nodes_link(nodes_to_process)
 
     return new_nodes
-
-
-if __name__ == "__main__":
-    text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-
-    nodes = text_to_textnodes(text)
-
-    for node in nodes:
-        print(node)

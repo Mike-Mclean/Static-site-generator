@@ -23,9 +23,3 @@ def generate_page(from_path, template_path, dest_path):
 
     with open(dest_path, "w") as new_html:
         new_html.write(template)
-
-if __name__ == "__main__":
-    from_path = "/home/mikemclean/github.com/Mike-Mclean/Static-site-generator/content/index.md"
-    template_path = "/home/mikemclean/github.com/Mike-Mclean/Static-site-generator/template.html"
-    dest_path = "/home/mikemclean/github.com/Mike-Mclean/Static-site-generator/public/index.html"
-    generate_page(from_path, template_path, dest_path)

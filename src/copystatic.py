@@ -17,3 +17,4 @@ def dir_copy(source, destination):
             new_destination = os.path.join(destination, item)
             os.mkdir(new_destination)
             dir_copy(item_path, new_destination)
+            
