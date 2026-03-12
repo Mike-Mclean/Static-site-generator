@@ -90,6 +90,13 @@ def get_heading_level(text):
         raise Exception("Invalid heading depth")
     return heading_count
 
+def extract_title(markdown):
+    sections = markdown.split("\n")
+    for section in sections:
+        if section and section[0] == '#':
+            return section.strip('# ')
+    raise Exception("No title")
+
 def markdown_to_HTML_node(markdown):
     block_nodes = []
     blocks = markdown_to_blocks(markdown)
@@ -133,13 +140,16 @@ def markdown_to_HTML_node(markdown):
 
 if __name__ == "__main__":
     md = """
-1. This is an ordered list
-2. With multiple
-3. items that I'm
-4. using for testing
+# Tolkien Fan Club
 
-##This is a heading
+![JRR Tolkien sitting](/images/tolkien.png)
+
+Here's the deal, **I like Tolkien**.
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
+
+## Blog posts
 """
-    node = markdown_to_HTML_node(md)
-    print(node.to_html())
-
+    print(extract_title(md))
