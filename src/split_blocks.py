@@ -67,14 +67,12 @@ def text_to_children(text):
 def list_children(text, is_ul = False):
     children = []
     list_items = text.strip().split("\n")
-    if not is_ul:
-        ol_item = 1
     for item in list_items:
         if is_ul:
-            children.append(LeafNode("li", item.strip('- ')))
+            text = item[2:]
         else:
-            children.append(LeafNode("li", item.strip(f"{ol_item}. ")))
-            ol_item += 1
+            text = item.split(". ", 1)[1]
+        children.append(ParentNode("li", text_to_children(text)))
     return children
 
 def manage_split_lines(text):
@@ -137,19 +135,3 @@ def markdown_to_HTML_node(markdown):
 
     html_node = ParentNode(tag='div', children=block_nodes)
     return html_node
-
-if __name__ == "__main__":
-    md = """
-# Tolkien Fan Club
-
-![JRR Tolkien sitting](/images/tolkien.png)
-
-Here's the deal, **I like Tolkien**.
-
-> "I am in fact a Hobbit in all but size."
->
-> -- J.R.R. Tolkien
-
-## Blog posts
-"""
-    print(extract_title(md))

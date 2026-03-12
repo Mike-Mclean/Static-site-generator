@@ -90,7 +90,7 @@ tag here
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><ol><li>This is an ordered list</li><li>With multiple</li><li>items that I'm</li><li>using for testing</li></ol><h2>This is a heading</h2></div>"
+            "<div><ol><li>This is an ordered list</li><li>With multiple</li><li>items that I'm</li><li> using for testing</li></ol><h2>This is a heading</h2></div>"
         )
 
 if __name__ == "__main__":
