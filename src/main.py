@@ -14,6 +14,7 @@ def main():
     else:
         basepath = sys.argv[1]
 
+
     dir_copy(static_path, public_path)
     generate_pages_recursive(content_path, template_path, public_path, basepath)
 
